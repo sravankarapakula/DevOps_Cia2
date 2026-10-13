@@ -52,6 +52,33 @@ class RegistrationServiceTest {
         assertFalse(student.isRegistered("CS301"));
     }
 
+    
+    @Test
+    void shouldRejectMixedCaseDuplicateRegistration() {
+        Student student = new Student("S102", "Rahul");
+
+        Course original = new Course(
+                "CS101", "Programming", 4, 30, true, null);
+
+        Course duplicate = new Course(
+                "Cs101", "Programming", 4, 30, true, null);
+
+        RegistrationService service = new RegistrationService();
+
+        assertTrue(service.register(student, original));
+
+        int previousCredits = student.getTotalCredits();
+        int previousEnrollment = original.getCurrentEnrollment();
+
+        boolean result = service.register(student, duplicate);
+
+        assertFalse(result);
+        assertEquals(previousCredits, student.getTotalCredits());
+        assertEquals(previousEnrollment, original.getCurrentEnrollment());
+        assertEquals(1, student.getRegisteredCourses().size());
+        assertEquals(0, duplicate.getCurrentEnrollment());
+    }
+
     @Test
     void shouldRejectMissingPrerequisite() {
 
